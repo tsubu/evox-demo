@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>認証状態デバッグ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+        }
+        .debug-section {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #28a745;
+        }
+        .error {
+            background: #dc3545;
+        }
+        .warning {
+            background: #ffc107;
+            color: #000;
+        }
+        .info {
+            background: #17a2b8;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .token-display {
+            word-break: break-all;
+            background: #222;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>認証状態デバッグ</h1>
+    
+    <div class="debug-section">
+        <h2>ローカルストレージ</h2>
+        <div id="localStorage-status"></div>
+        <div id="localStorage-token"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>セッションストレージ</h2>
+        <div id="sessionStorage-status"></div>
+        <div id="sessionStorage-token"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>API認証テスト</h2>
+        <button onclick="testAuthAPI()">認証APIをテスト</button>
+        <div id="api-test-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>ナビゲーションテスト</h2>
+        <button onclick="testNavigation()">ペンライトページに移動</button>
+        <button onclick="testMyPage()">マイページに移動</button>
+        <div id="navigation-result"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>クッキー</h2>
+        <div id="cookies-status"></div>
+    </div>
+    
+    <script>
+        function checkLocalStorage() {
+            const authToken = localStorage.getItem('auth_token');
+            const userRole = localStorage.getItem('user_role');
+            const userId = localStorage.getItem('user_id');
+            
+            const statusDiv = document.getElementById('localStorage-status');
+            const tokenDiv = document.getElementById('localStorage-token');
+            
+            if (authToken) {
+                statusDiv.innerHTML = `
+                    <div class="status success">
+                        ✅ 認証トークン: 存在<br>
+                        👤 ユーザーID: ${userId || 'N/A'}<br>
+                        🎭 ユーザーロール: ${userRole || 'N/A'}
+                    </div>
+                `;
+                tokenDiv.innerHTML = `
+                    <strong>トークン内容:</strong><br>
+                    <div class="token-display">${authToken}</div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ 認証トークン: 存在しません
+                    </div>
+                `;
+                tokenDiv.innerHTML = '';
+            }
+        }
+        
+        function checkSessionStorage() {
+            const authToken = sessionStorage.getItem('auth_token');
+            const userRole = sessionStorage.getItem('user_role');
+            const userId = sessionStorage.getItem('user_id');
+            
+            const statusDiv = document.getElementById('sessionStorage-status');
+            const tokenDiv = document.getElementById('sessionStorage-token');
+            
+            if (authToken) {
+                statusDiv.innerHTML = `
+                    <div class="status success">
+                        ✅ セッション認証トークン: 存在<br>
+                        👤 ユーザーID: ${userId || 'N/A'}<br>
+                        🎭 ユーザーロール: ${userRole || 'N/A'}
+                    </div>
+                `;
+                tokenDiv.innerHTML = `
+                    <strong>セッショントークン内容:</strong><br>
+                    <div class="token-display">${authToken}</div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ セッション認証トークン: 存在しません
+                    </div>
+                `;
+                tokenDiv.innerHTML = '';
+            }
+        }
+        
+        function checkCookies() {
+            const cookies = document.cookie;
+            const statusDiv = document.getElementById('cookies-status');
+            
+            if (cookies) {
+                statusDiv.innerHTML = `
+                    <div class="status info">
+                        🍪 クッキー: 存在<br>
+                        <div class="token-display">${cookies}</div>
+                    </div>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="status warning">
+                        ⚠️ クッキー: 存在しません
+                    </div>
+                `;
+            }
+        }
+        
+        async function testAuthAPI() {
+            const resultDiv = document.getElementById('api-test-result');
+            resultDiv.innerHTML = '<div class="status info">APIテスト中...</div>';
+            
+            try {
+                const response = await fetch('/api/profile/check', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`,
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML = `
+                        <div class="status success">
+                            ✅ API認証成功<br>
+                            レスポンス: ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="status error">
+                            ❌ API認証失敗<br>
+                            ステータス: ${response.status}<br>
+                            レスポンス: ${JSON.stringify(result, null, 2)}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="status error">
+                        ❌ APIテストエラー<br>
+                        エラー: ${error.message}
+                    </div>
+                `;
+            }
+        }
+        
+        function testNavigation() {
+            const resultDiv = document.getElementById('navigation-result');
+            resultDiv.innerHTML = '<div class="status info">ペンライトページに移動中...</div>';
+            
+            // 現在のURLを保存
+            const currentUrl = window.location.href;
+            
+            // ペンライトページに移動
+            window.location.href = '/penlight-app';
+            
+            // 3秒後に結果を表示
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <div class="status info">
+                        🔄 ペンライトページに移動しました<br>
+                        現在のURL: ${window.location.href}
+                    </div>
+                `;
+            }, 3000);
+        }
+        
+        function testMyPage() {
+            const resultDiv = document.getElementById('navigation-result');
+            resultDiv.innerHTML = '<div class="status info">マイページに移動中...</div>';
+            
+            // マイページに移動
+            window.location.href = '/mypage';
+            
+            // 3秒後に結果を表示
+            setTimeout(() => {
+                resultDiv.innerHTML = `
+                    <div class="status info">
+                        🔄 マイページに移動しました<br>
+                        現在のURL: ${window.location.href}
+                    </div>
+                `;
+            }, 3000);
+        }
+        
+        // ページ読み込み時に認証状態をチェック
+        window.addEventListener('load', () => {
+            checkLocalStorage();
+            checkSessionStorage();
+            checkCookies();
+        });
+        
+        // 定期的に認証状態を更新
+        setInterval(() => {
+            checkLocalStorage();
+            checkSessionStorage();
+            checkCookies();
+        }, 5000);
+    </script>
+</body>
+</html>

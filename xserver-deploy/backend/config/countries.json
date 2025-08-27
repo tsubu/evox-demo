@@ -1,0 +1,1034 @@
+[
+  {
+    "code": "JP",
+    "name": "日本",
+    "name_en": "Japan",
+    "name_zh": "日本",
+    "name_ko": "일본",
+    "phone_code": "+81"
+  },
+  {
+    "code": "TW",
+    "name": "台湾",
+    "name_en": "Taiwan",
+    "name_zh": "台湾",
+    "name_ko": "대만",
+    "phone_code": "+886"
+  },
+  {
+    "code": "HK",
+    "name": "香港",
+    "name_en": "Hong Kong",
+    "name_zh": "香港",
+    "name_ko": "홍콩",
+    "phone_code": "+852"
+  },
+  {
+    "code": "US",
+    "name": "アメリカ",
+    "name_en": "United States",
+    "name_zh": "美国",
+    "name_ko": "미국",
+    "phone_code": "+1"
+  },
+  {
+    "code": "FR",
+    "name": "フランス",
+    "name_en": "France",
+    "name_zh": "法国",
+    "name_ko": "프랑스",
+    "phone_code": "+33"
+  },
+  {
+    "code": "DE",
+    "name": "ドイツ",
+    "name_en": "Germany",
+    "name_zh": "德国",
+    "name_ko": "독일",
+    "phone_code": "+49"
+  },
+  {
+    "code": "CN",
+    "name": "中国",
+    "name_en": "China",
+    "name_zh": "中国",
+    "name_ko": "중국",
+    "phone_code": "+86"
+  },
+  {
+    "code": "KR",
+    "name": "韓国",
+    "name_en": "South Korea",
+    "name_zh": "韩国",
+    "name_ko": "대한민국",
+    "phone_code": "+82"
+  },
+  {
+    "code": "MO",
+    "name": "マカオ",
+    "name_en": "Macau",
+    "name_zh": "澳门",
+    "name_ko": "마카오",
+    "phone_code": "+853"
+  },
+  {
+    "code": "SG",
+    "name": "シンガポール",
+    "name_en": "Singapore",
+    "name_zh": "新加坡",
+    "name_ko": "싱가포르",
+    "phone_code": "+65"
+  },
+  {
+    "code": "MY",
+    "name": "マレーシア",
+    "name_en": "Malaysia",
+    "name_zh": "马来西亚",
+    "name_ko": "말레이시아",
+    "phone_code": "+60"
+  },
+  {
+    "code": "TH",
+    "name": "タイ",
+    "name_en": "Thailand",
+    "name_zh": "泰国",
+    "name_ko": "태국",
+    "phone_code": "+66"
+  },
+  {
+    "code": "VN",
+    "name": "ベトナム",
+    "name_en": "Vietnam",
+    "name_zh": "越南",
+    "name_ko": "베트남",
+    "phone_code": "+84"
+  },
+  {
+    "code": "ID",
+    "name": "インドネシア",
+    "name_en": "Indonesia",
+    "name_zh": "印度尼西亚",
+    "name_ko": "인도네시아",
+    "phone_code": "+62"
+  },
+  {
+    "code": "PH",
+    "name": "フィリピン",
+    "name_en": "Philippines",
+    "name_zh": "菲律宾",
+    "name_ko": "필리핀",
+    "phone_code": "+63"
+  },
+  {
+    "code": "IN",
+    "name": "インド",
+    "name_en": "India",
+    "name_zh": "印度",
+    "name_ko": "인도",
+    "phone_code": "+91"
+  },
+  {
+    "code": "BD",
+    "name": "バングラデシュ",
+    "name_en": "Bangladesh",
+    "name_zh": "孟加拉国",
+    "name_ko": "방글라데시",
+    "phone_code": "+880"
+  },
+  {
+    "code": "LK",
+    "name": "スリランカ",
+    "name_en": "Sri Lanka",
+    "name_zh": "斯里兰卡",
+    "name_ko": "스리랑카",
+    "phone_code": "+94"
+  },
+  {
+    "code": "NP",
+    "name": "ネパール",
+    "name_en": "Nepal",
+    "name_zh": "尼泊尔",
+    "name_ko": "네팔",
+    "phone_code": "+977"
+  },
+  {
+    "code": "MM",
+    "name": "ミャンマー",
+    "name_en": "Myanmar",
+    "name_zh": "缅甸",
+    "name_ko": "미얀마",
+    "phone_code": "+95"
+  },
+  {
+    "code": "KH",
+    "name": "カンボジア",
+    "name_en": "Cambodia",
+    "name_zh": "柬埔寨",
+    "name_ko": "캄보디아",
+    "phone_code": "+855"
+  },
+  {
+    "code": "LA",
+    "name": "ラオス",
+    "name_en": "Laos",
+    "name_zh": "老挝",
+    "name_ko": "라오스",
+    "phone_code": "+856"
+  },
+  {
+    "code": "MN",
+    "name": "モンゴル",
+    "name_en": "Mongolia",
+    "name_zh": "蒙古",
+    "name_ko": "몽골",
+    "phone_code": "+976"
+  },
+  {
+    "code": "AU",
+    "name": "オーストラリア",
+    "name_en": "Australia",
+    "name_zh": "澳大利亚",
+    "name_ko": "호주",
+    "phone_code": "+61"
+  },
+  {
+    "code": "NZ",
+    "name": "ニュージーランド",
+    "name_en": "New Zealand",
+    "name_zh": "新西兰",
+    "name_ko": "뉴질랜드",
+    "phone_code": "+64"
+  },
+  {
+    "code": "FJ",
+    "name": "フィジー",
+    "name_en": "Fiji",
+    "name_zh": "斐济",
+    "name_ko": "피지",
+    "phone_code": "+679"
+  },
+  {
+    "code": "PG",
+    "name": "パプアニューギニア",
+    "name_en": "Papua New Guinea",
+    "name_zh": "巴布亚新几内亚",
+    "name_ko": "파푸아뉴기니",
+    "phone_code": "+675"
+  },
+  {
+    "code": "US",
+    "name": "アメリカ",
+    "name_en": "United States",
+    "name_zh": "美国",
+    "name_ko": "미국",
+    "phone_code": "+1"
+  },
+  {
+    "code": "CA",
+    "name": "カナダ",
+    "name_en": "Canada",
+    "name_zh": "加拿大",
+    "name_ko": "캐나다",
+    "phone_code": "+1"
+  },
+  {
+    "code": "MX",
+    "name": "メキシコ",
+    "name_en": "Mexico",
+    "name_zh": "墨西哥",
+    "name_ko": "멕시코",
+    "phone_code": "+52"
+  },
+  {
+    "code": "GB",
+    "name": "イギリス",
+    "name_en": "United Kingdom",
+    "name_zh": "英国",
+    "name_ko": "영국",
+    "phone_code": "+44"
+  },
+  {
+    "code": "DE",
+    "name": "ドイツ",
+    "name_en": "Germany",
+    "name_zh": "德国",
+    "name_ko": "독일",
+    "phone_code": "+49"
+  },
+  {
+    "code": "FR",
+    "name": "フランス",
+    "name_en": "France",
+    "name_zh": "法国",
+    "name_ko": "프랑스",
+    "phone_code": "+33"
+  },
+  {
+    "code": "IT",
+    "name": "イタリア",
+    "name_en": "Italy",
+    "name_zh": "意大利",
+    "name_ko": "이탈리아",
+    "phone_code": "+39"
+  },
+  {
+    "code": "ES",
+    "name": "スペイン",
+    "name_en": "Spain",
+    "name_zh": "西班牙",
+    "name_ko": "스페인",
+    "phone_code": "+34"
+  },
+  {
+    "code": "NL",
+    "name": "オランダ",
+    "name_en": "Netherlands",
+    "name_zh": "荷兰",
+    "name_ko": "네덜란드",
+    "phone_code": "+31"
+  },
+  {
+    "code": "BE",
+    "name": "ベルギー",
+    "name_en": "Belgium",
+    "name_zh": "比利时",
+    "name_ko": "벨기에",
+    "phone_code": "+32"
+  },
+  {
+    "code": "CH",
+    "name": "スイス",
+    "name_en": "Switzerland",
+    "name_zh": "瑞士",
+    "name_ko": "스위스",
+    "phone_code": "+41"
+  },
+  {
+    "code": "AT",
+    "name": "オーストリア",
+    "name_en": "Austria",
+    "name_zh": "奥地利",
+    "name_ko": "오스트리아",
+    "phone_code": "+43"
+  },
+  {
+    "code": "SE",
+    "name": "スウェーデン",
+    "name_en": "Sweden",
+    "name_zh": "瑞典",
+    "name_ko": "스웨덴",
+    "phone_code": "+46"
+  },
+  {
+    "code": "NO",
+    "name": "ノルウェー",
+    "name_en": "Norway",
+    "name_zh": "挪威",
+    "name_ko": "노르웨이",
+    "phone_code": "+47"
+  },
+  {
+    "code": "DK",
+    "name": "デンマーク",
+    "name_en": "Denmark",
+    "name_zh": "丹麦",
+    "name_ko": "덴마크",
+    "phone_code": "+45"
+  },
+  {
+    "code": "FI",
+    "name": "フィンランド",
+    "name_en": "Finland",
+    "name_zh": "芬兰",
+    "name_ko": "핀란드",
+    "phone_code": "+358"
+  },
+  {
+    "code": "PL",
+    "name": "ポーランド",
+    "name_en": "Poland",
+    "name_zh": "波兰",
+    "name_ko": "폴란드",
+    "phone_code": "+48"
+  },
+  {
+    "code": "CZ",
+    "name": "チェコ",
+    "name_en": "Czech Republic",
+    "name_zh": "捷克",
+    "name_ko": "체코",
+    "phone_code": "+420"
+  },
+  {
+    "code": "HU",
+    "name": "ハンガリー",
+    "name_en": "Hungary",
+    "name_zh": "匈牙利",
+    "name_ko": "헝가리",
+    "phone_code": "+36"
+  },
+  {
+    "code": "RO",
+    "name": "ルーマニア",
+    "name_en": "Romania",
+    "name_zh": "罗马尼亚",
+    "name_ko": "루마니아",
+    "phone_code": "+40"
+  },
+  {
+    "code": "BG",
+    "name": "ブルガリア",
+    "name_en": "Bulgaria",
+    "name_zh": "保加利亚",
+    "name_ko": "불가리아",
+    "phone_code": "+359"
+  },
+  {
+    "code": "HR",
+    "name": "クロアチア",
+    "name_en": "Croatia",
+    "name_zh": "克罗地亚",
+    "name_ko": "크로아티아",
+    "phone_code": "+385"
+  },
+  {
+    "code": "RS",
+    "name": "セルビア",
+    "name_en": "Serbia",
+    "name_zh": "塞尔维亚",
+    "name_ko": "세르비아",
+    "phone_code": "+381"
+  },
+  {
+    "code": "SI",
+    "name": "スロベニア",
+    "name_en": "Slovenia",
+    "name_zh": "斯洛文尼亚",
+    "name_ko": "슬로베니아",
+    "phone_code": "+386"
+  },
+  {
+    "code": "SK",
+    "name": "スロバキア",
+    "name_en": "Slovakia",
+    "name_zh": "斯洛伐克",
+    "name_ko": "슬로바키아",
+    "phone_code": "+421"
+  },
+  {
+    "code": "LT",
+    "name": "リトアニア",
+    "name_en": "Lithuania",
+    "name_zh": "立陶宛",
+    "name_ko": "리투아니아",
+    "phone_code": "+370"
+  },
+  {
+    "code": "LV",
+    "name": "ラトビア",
+    "name_en": "Latvia",
+    "name_zh": "拉脱维亚",
+    "name_ko": "라트비아",
+    "phone_code": "+371"
+  },
+  {
+    "code": "EE",
+    "name": "エストニア",
+    "name_en": "Estonia",
+    "name_zh": "爱沙尼亚",
+    "name_ko": "에스토니아",
+    "phone_code": "+372"
+  },
+  {
+    "code": "PT",
+    "name": "ポルトガル",
+    "name_en": "Portugal",
+    "name_zh": "葡萄牙",
+    "name_ko": "포르투갈",
+    "phone_code": "+351"
+  },
+  {
+    "code": "GR",
+    "name": "ギリシャ",
+    "name_en": "Greece",
+    "name_zh": "希腊",
+    "name_ko": "그리스",
+    "phone_code": "+30"
+  },
+  {
+    "code": "TR",
+    "name": "トルコ",
+    "name_en": "Turkey",
+    "name_zh": "土耳其",
+    "name_ko": "터키",
+    "phone_code": "+90"
+  },
+  {
+    "code": "RU",
+    "name": "ロシア",
+    "name_en": "Russia",
+    "name_zh": "俄罗斯",
+    "name_ko": "러시아",
+    "phone_code": "+7"
+  },
+  {
+    "code": "UA",
+    "name": "ウクライナ",
+    "name_en": "Ukraine",
+    "name_zh": "乌克兰",
+    "name_ko": "우크라이나",
+    "phone_code": "+380"
+  },
+  {
+    "code": "BY",
+    "name": "ベラルーシ",
+    "name_en": "Belarus",
+    "name_zh": "白俄罗斯",
+    "name_ko": "벨라루스",
+    "phone_code": "+375"
+  },
+  {
+    "code": "MD",
+    "name": "モルドバ",
+    "name_en": "Moldova",
+    "name_zh": "摩尔多瓦",
+    "name_ko": "몰도바",
+    "phone_code": "+373"
+  },
+  {
+    "code": "IL",
+    "name": "イスラエル",
+    "name_en": "Israel",
+    "name_zh": "以色列",
+    "name_ko": "이스라엘",
+    "phone_code": "+972"
+  },
+  {
+    "code": "SA",
+    "name": "サウジアラビア",
+    "name_en": "Saudi Arabia",
+    "name_zh": "沙特阿拉伯",
+    "name_ko": "사우디아라비아",
+    "phone_code": "+966"
+  },
+  {
+    "code": "AE",
+    "name": "アラブ首長国連邦",
+    "name_en": "United Arab Emirates",
+    "name_zh": "阿联酋",
+    "name_ko": "아랍에미리트",
+    "phone_code": "+971"
+  },
+  {
+    "code": "QA",
+    "name": "カタール",
+    "name_en": "Qatar",
+    "name_zh": "卡塔尔",
+    "name_ko": "카타르",
+    "phone_code": "+974"
+  },
+  {
+    "code": "KW",
+    "name": "クウェート",
+    "name_en": "Kuwait",
+    "name_zh": "科威特",
+    "name_ko": "쿠웨이트",
+    "phone_code": "+965"
+  },
+  {
+    "code": "BH",
+    "name": "バーレーン",
+    "name_en": "Bahrain",
+    "name_zh": "巴林",
+    "name_ko": "바레인",
+    "phone_code": "+973"
+  },
+  {
+    "code": "OM",
+    "name": "オマーン",
+    "name_en": "Oman",
+    "name_zh": "阿曼",
+    "name_ko": "오만",
+    "phone_code": "+968"
+  },
+  {
+    "code": "JO",
+    "name": "ヨルダン",
+    "name_en": "Jordan",
+    "name_zh": "约旦",
+    "name_ko": "요르단",
+    "phone_code": "+962"
+  },
+  {
+    "code": "LB",
+    "name": "レバノン",
+    "name_en": "Lebanon",
+    "name_zh": "黎巴嫩",
+    "name_ko": "레바논",
+    "phone_code": "+961"
+  },
+  {
+    "code": "SY",
+    "name": "シリア",
+    "name_en": "Syria",
+    "name_zh": "叙利亚",
+    "name_ko": "시리아",
+    "phone_code": "+963"
+  },
+  {
+    "code": "IQ",
+    "name": "イラク",
+    "name_en": "Iraq",
+    "name_zh": "伊拉克",
+    "name_ko": "이라크",
+    "phone_code": "+964"
+  },
+  {
+    "code": "IR",
+    "name": "イラン",
+    "name_en": "Iran",
+    "name_zh": "伊朗",
+    "name_ko": "이란",
+    "phone_code": "+98"
+  },
+  {
+    "code": "AF",
+    "name": "アフガニスタン",
+    "name_en": "Afghanistan",
+    "name_zh": "阿富汗",
+    "name_ko": "아프가니스탄",
+    "phone_code": "+93"
+  },
+  {
+    "code": "PK",
+    "name": "パキスタン",
+    "name_en": "Pakistan",
+    "name_zh": "巴基斯坦",
+    "name_ko": "파키스탄",
+    "phone_code": "+92"
+  },
+  {
+    "code": "BR",
+    "name": "ブラジル",
+    "name_en": "Brazil",
+    "name_zh": "巴西",
+    "name_ko": "브라질",
+    "phone_code": "+55"
+  },
+  {
+    "code": "AR",
+    "name": "アルゼンチン",
+    "name_en": "Argentina",
+    "name_zh": "阿根廷",
+    "name_ko": "아르헨티나",
+    "phone_code": "+54"
+  },
+  {
+    "code": "CL",
+    "name": "チリ",
+    "name_en": "Chile",
+    "name_zh": "智利",
+    "name_ko": "칠레",
+    "phone_code": "+56"
+  },
+  {
+    "code": "CO",
+    "name": "コロンビア",
+    "name_en": "Colombia",
+    "name_zh": "哥伦比亚",
+    "name_ko": "콜롬비아",
+    "phone_code": "+57"
+  },
+  {
+    "code": "PE",
+    "name": "ペルー",
+    "name_en": "Peru",
+    "name_zh": "秘鲁",
+    "name_ko": "페루",
+    "phone_code": "+51"
+  },
+  {
+    "code": "VE",
+    "name": "ベネズエラ",
+    "name_en": "Venezuela",
+    "name_zh": "委内瑞拉",
+    "name_ko": "베네수엘라",
+    "phone_code": "+58"
+  },
+  {
+    "code": "EC",
+    "name": "エクアドル",
+    "name_en": "Ecuador",
+    "name_zh": "厄瓜多尔",
+    "name_ko": "에콰도르",
+    "phone_code": "+593"
+  },
+  {
+    "code": "BO",
+    "name": "ボリビア",
+    "name_en": "Bolivia",
+    "name_zh": "玻利维亚",
+    "name_ko": "볼리비아",
+    "phone_code": "+591"
+  },
+  {
+    "code": "PY",
+    "name": "パラグアイ",
+    "name_en": "Paraguay",
+    "name_zh": "巴拉圭",
+    "name_ko": "파라과이",
+    "phone_code": "+595"
+  },
+  {
+    "code": "UY",
+    "name": "ウルグアイ",
+    "name_en": "Uruguay",
+    "name_zh": "乌拉圭",
+    "name_ko": "우루과이",
+    "phone_code": "+598"
+  },
+  {
+    "code": "ZA",
+    "name": "南アフリカ",
+    "name_en": "South Africa",
+    "name_zh": "南非",
+    "name_ko": "남아프리카공화국",
+    "phone_code": "+27"
+  },
+  {
+    "code": "EG",
+    "name": "エジプト",
+    "name_en": "Egypt",
+    "name_zh": "埃及",
+    "name_ko": "이집트",
+    "phone_code": "+20"
+  },
+  {
+    "code": "NG",
+    "name": "ナイジェリア",
+    "name_en": "Nigeria",
+    "name_zh": "尼日利亚",
+    "name_ko": "나이지리아",
+    "phone_code": "+234"
+  },
+  {
+    "code": "KE",
+    "name": "ケニア",
+    "name_en": "Kenya",
+    "name_zh": "肯尼亚",
+    "name_ko": "케냐",
+    "phone_code": "+254"
+  },
+  {
+    "code": "GH",
+    "name": "ガーナ",
+    "name_en": "Ghana",
+    "name_zh": "加纳",
+    "name_ko": "가나",
+    "phone_code": "+233"
+  },
+  {
+    "code": "ET",
+    "name": "エチオピア",
+    "name_en": "Ethiopia",
+    "name_zh": "埃塞俄比亚",
+    "name_ko": "에티오피아",
+    "phone_code": "+251"
+  },
+  {
+    "code": "TZ",
+    "name": "タンザニア",
+    "name_en": "Tanzania",
+    "name_zh": "坦桑尼亚",
+    "name_ko": "탄자니아",
+    "phone_code": "+255"
+  },
+  {
+    "code": "UG",
+    "name": "ウガンダ",
+    "name_en": "Uganda",
+    "name_zh": "乌干达",
+    "name_ko": "우간다",
+    "phone_code": "+256"
+  },
+  {
+    "code": "DZ",
+    "name": "アルジェリア",
+    "name_en": "Algeria",
+    "name_zh": "阿尔及利亚",
+    "name_ko": "알제리",
+    "phone_code": "+213"
+  },
+  {
+    "code": "MA",
+    "name": "モロッコ",
+    "name_en": "Morocco",
+    "name_zh": "摩洛哥",
+    "name_ko": "모로코",
+    "phone_code": "+212"
+  },
+  {
+    "code": "TN",
+    "name": "チュニジア",
+    "name_en": "Tunisia",
+    "name_zh": "突尼斯",
+    "name_ko": "튀니지",
+    "phone_code": "+216"
+  },
+  {
+    "code": "LY",
+    "name": "リビア",
+    "name_en": "Libya",
+    "name_zh": "利比亚",
+    "name_ko": "리비아",
+    "phone_code": "+218"
+  },
+  {
+    "code": "SD",
+    "name": "スーダン",
+    "name_en": "Sudan",
+    "name_zh": "苏丹",
+    "name_ko": "수단",
+    "phone_code": "+249"
+  },
+  {
+    "code": "CM",
+    "name": "カメルーン",
+    "name_en": "Cameroon",
+    "name_zh": "喀麦隆",
+    "name_ko": "카메룬",
+    "phone_code": "+237"
+  },
+  {
+    "code": "CI",
+    "name": "コートジボワール",
+    "name_en": "Ivory Coast",
+    "name_zh": "科特迪瓦",
+    "name_ko": "코트디부아르",
+    "phone_code": "+225"
+  },
+  {
+    "code": "SN",
+    "name": "セネガル",
+    "name_en": "Senegal",
+    "name_zh": "塞内加尔",
+    "name_ko": "세네갈",
+    "phone_code": "+221"
+  },
+  {
+    "code": "ML",
+    "name": "マリ",
+    "name_en": "Mali",
+    "name_zh": "马里",
+    "name_ko": "말리",
+    "phone_code": "+223"
+  },
+  {
+    "code": "BF",
+    "name": "ブルキナファソ",
+    "name_en": "Burkina Faso",
+    "name_zh": "布基纳法索",
+    "name_ko": "부르키나파소",
+    "phone_code": "+226"
+  },
+  {
+    "code": "NE",
+    "name": "ニジェール",
+    "name_en": "Niger",
+    "name_zh": "尼日尔",
+    "name_ko": "니제르",
+    "phone_code": "+227"
+  },
+  {
+    "code": "TD",
+    "name": "チャド",
+    "name_en": "Chad",
+    "name_zh": "乍得",
+    "name_ko": "차드",
+    "phone_code": "+235"
+  },
+  {
+    "code": "CF",
+    "name": "中央アフリカ共和国",
+    "name_en": "Central African Republic",
+    "name_zh": "中非共和国",
+    "name_ko": "중앙아프리카공화국",
+    "phone_code": "+236"
+  },
+  {
+    "code": "CG",
+    "name": "コンゴ共和国",
+    "name_en": "Republic of the Congo",
+    "name_zh": "刚果共和国",
+    "name_ko": "콩고공화국",
+    "phone_code": "+242"
+  },
+  {
+    "code": "CD",
+    "name": "コンゴ民主共和国",
+    "name_en": "Democratic Republic of the Congo",
+    "name_zh": "刚果民主共和国",
+    "name_ko": "콩고민주공화국",
+    "phone_code": "+243"
+  },
+  {
+    "code": "AO",
+    "name": "アンゴラ",
+    "name_en": "Angola",
+    "name_zh": "安哥拉",
+    "name_ko": "앙골라",
+    "phone_code": "+244"
+  },
+  {
+    "code": "ZM",
+    "name": "ザンビア",
+    "name_en": "Zambia",
+    "name_zh": "赞比亚",
+    "name_ko": "잠비아",
+    "phone_code": "+260"
+  },
+  {
+    "code": "ZW",
+    "name": "ジンバブエ",
+    "name_en": "Zimbabwe",
+    "name_zh": "津巴布韦",
+    "name_ko": "짐바브웨",
+    "phone_code": "+263"
+  },
+  {
+    "code": "BW",
+    "name": "ボツワナ",
+    "name_en": "Botswana",
+    "name_zh": "博茨瓦纳",
+    "name_ko": "보츠와나",
+    "phone_code": "+267"
+  },
+  {
+    "code": "NA",
+    "name": "ナミビア",
+    "name_en": "Namibia",
+    "name_zh": "纳米比亚",
+    "name_ko": "나미비아",
+    "phone_code": "+264"
+  },
+  {
+    "code": "MG",
+    "name": "マダガスカル",
+    "name_en": "Madagascar",
+    "name_zh": "马达加斯加",
+    "name_ko": "마다가스카르",
+    "phone_code": "+261"
+  },
+  {
+    "code": "MU",
+    "name": "モーリシャス",
+    "name_en": "Mauritius",
+    "name_zh": "毛里求斯",
+    "name_ko": "모리셔스",
+    "phone_code": "+230"
+  },
+  {
+    "code": "SC",
+    "name": "セーシェル",
+    "name_en": "Seychelles",
+    "name_zh": "塞舌尔",
+    "name_ko": "세이셸",
+    "phone_code": "+248"
+  },
+  {
+    "code": "KM",
+    "name": "コモロ",
+    "name_en": "Comoros",
+    "name_zh": "科摩罗",
+    "name_ko": "코모로",
+    "phone_code": "+269"
+  },
+  {
+    "code": "DJ",
+    "name": "ジブチ",
+    "name_en": "Djibouti",
+    "name_zh": "吉布提",
+    "name_ko": "지부티",
+    "phone_code": "+253"
+  },
+  {
+    "code": "SO",
+    "name": "ソマリア",
+    "name_en": "Somalia",
+    "name_zh": "索马里",
+    "name_ko": "소말리아",
+    "phone_code": "+252"
+  },
+  {
+    "code": "ER",
+    "name": "エリトリア",
+    "name_en": "Eritrea",
+    "name_zh": "厄立特里亚",
+    "name_ko": "에리트레아",
+    "phone_code": "+291"
+  },
+  {
+    "code": "KZ",
+    "name": "カザフスタン",
+    "name_en": "Kazakhstan",
+    "name_zh": "哈萨克斯坦",
+    "name_ko": "카자흐스탄",
+    "phone_code": "+7"
+  },
+  {
+    "code": "UZ",
+    "name": "ウズベキスタン",
+    "name_en": "Uzbekistan",
+    "name_zh": "乌兹别克斯坦",
+    "name_ko": "우즈베키스탄",
+    "phone_code": "+998"
+  },
+  {
+    "code": "KG",
+    "name": "キルギス",
+    "name_en": "Kyrgyzstan",
+    "name_zh": "吉尔吉斯斯坦",
+    "name_ko": "키르기스스탄",
+    "phone_code": "+996"
+  },
+  {
+    "code": "TJ",
+    "name": "タジキスタン",
+    "name_en": "Tajikistan",
+    "name_zh": "塔吉克斯坦",
+    "name_ko": "타지키스탄",
+    "phone_code": "+992"
+  },
+  {
+    "code": "TM",
+    "name": "トルクメニスタン",
+    "name_en": "Turkmenistan",
+    "name_zh": "土库曼斯坦",
+    "name_ko": "투르크메니스탄",
+    "phone_code": "+993"
+  },
+  {
+    "code": "AZ",
+    "name": "アゼルバイジャン",
+    "name_en": "Azerbaijan",
+    "name_zh": "阿塞拜疆",
+    "name_ko": "아제르바이잔",
+    "phone_code": "+994"
+  },
+  {
+    "code": "GE",
+    "name": "ジョージア",
+    "name_en": "Georgia",
+    "name_zh": "格鲁吉亚",
+    "name_ko": "조지아",
+    "phone_code": "+995"
+  },
+  {
+    "code": "AM",
+    "name": "アルメニア",
+    "name_en": "Armenia",
+    "name_zh": "亚美尼亚",
+    "name_ko": "아르메니아",
+    "phone_code": "+374"
+  }
+]

@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# AWS Lightsail + RDS (Aurora PostgreSQL) 設定ファイル
+# 使用方法: cp aws-config.sh.example aws-config.sh して値を設定
+
+# AWS基本設定
+AWS_REGION="ap-northeast-1"
+AWS_ACCOUNT_ID="your-aws-account-id"
+
+# Lightsail設定
+LIGHTSAIL_INSTANCE_NAME="evox-production"
+LIGHTSAIL_INSTANCE_BLUEPRINT="ubuntu_22_04"
+LIGHTSAIL_INSTANCE_BUNDLE="medium_2_0"  # 2GB RAM, 1 vCPU
+LIGHTSAIL_INSTANCE_ZONE="ap-northeast-1a"
+
+# RDS (Aurora PostgreSQL) 設定
+RDS_CLUSTER_IDENTIFIER="evox-aurora-cluster"
+RDS_INSTANCE_CLASS="db.t3.micro"
+RDS_ENGINE="aurora-postgresql"
+RDS_ENGINE_VERSION="15.4"
+RDS_DATABASE_NAME="evox_production"
+RDS_MASTER_USERNAME="evox_admin"
+RDS_MASTER_PASSWORD="your-secure-password"
+RDS_ENDPOINT="your-aurora-cluster-endpoint.cluster-xxxxx.ap-northeast-1.rds.amazonaws.com"
+
+# ドメイン設定
+DOMAIN_NAME="your-domain.com"
+SSL_CERTIFICATE_ARN="arn:aws:acm:ap-northeast-1:your-account-id:certificate/your-cert-id"
+
+# セキュリティグループ設定
+SECURITY_GROUP_IDS="sg-xxxxxxxxx"
+SUBNET_IDS="subnet-xxxxxxxxx,subnet-yyyyyyyyy"
+
+# ロードバランサー設定（ALB使用時）
+BACKEND_TARGET_GROUP_ARN="arn:aws:elasticloadbalancing:ap-northeast-1:your-account-id:targetgroup/evox-backend/xxxxxxxxx"
+FRONTEND_TARGET_GROUP_ARN="arn:aws:elasticloadbalancing:ap-northeast-1:your-account-id:targetgroup/evox-frontend/xxxxxxxxx"
+
+# 環境変数
+APP_ENV="production"
+APP_DEBUG="false"
+APP_URL="https://$DOMAIN_NAME"
+
+# Twilio設定
+TWILIO_ACCOUNT_SID="your_twilio_account_sid"
+TWILIO_AUTH_TOKEN="your_twilio_auth_token"
+TWILIO_FROM_NUMBER="+1234567890"
+
+# メール設定
+MAIL_HOST="your-smtp-host"
+MAIL_PORT="587"
+MAIL_USERNAME="your-smtp-username"
+MAIL_PASSWORD="your-smtp-password"
+MAIL_FROM_ADDRESS="noreply@$DOMAIN_NAME"
+
+# Redis設定（ElastiCache使用時）
+REDIS_ENDPOINT="your-redis-endpoint.cache.amazonaws.com"
+REDIS_PORT="6379"
+
+# S3設定（ファイル保存用）
+S3_BUCKET="evox-production-files"
+S3_REGION="ap-northeast-1"
+
+# CloudWatch設定
+CLOUDWATCH_LOG_GROUP="/aws/lightsail/evox"

@@ -1,0 +1,251 @@
+# Teaser Site 要件（Vue + Laravel｜AWS Lightsail + RDS Aurora PG16）
+サーバは **AWS Lightsail（設定済）**、データベースは **Amazon RDS：Aurora PostgreSQL 16系（設定済）**。フロントを **Vue（Nuxt 3）**、バックエンドAPIを **Laravel 11（PHP 8.3）** とする。事前登録（電話＋パスワード→OTP認証）、カウントダウン、世界観訴求に加え、**マイページ**／**QR読み込み**／**管理画面** を初期スコープに含める。以下は **Cursor の Vibeコーディング** でそのまま使えるプロンプト・API契約・データモデル・AWS接続手順を記す。
+
+---
+
+## 0. スコープ
+- 対象ページ：
+  - **TOP**（Hero／カウントダウン／登録者数／Newsティッカー／世界観）
+  - **事前登録**（モーダル + ページ）
+  - **マイページ**（ポイント・登録状況・お知らせ）
+  - **QR読み込み**（カメラ/画像→報酬付与）
+  - **管理画面**（ダッシュボード、News管理、ユーザー・QR管理（画像出力も）・イベントQR）
+  - **問い合わせ**、**利用規約**、**プライバシーポリシー**
+- 目的：事前登録の獲得、世界観訴求、登録者の囲い込み（ポイント/限定特典）
+
+---
+
+## 1. 技術スタック
+**フロント（Vue）**
+- Nuxt 3（Vue 3 + TypeScript + Vite）
+- UI：Tailwind CSS + Headless UI for Vue（マーケ）／Naive UI（管理画面）
+- 状態管理：Pinia、ユーティリティ：VueUse、フォーム：Vee-Validate + Zod
+- 画像最適化：@nuxt/image、アニメーション：Motion One or VueUse Motion
+- QR読み取り：`@zxing/library`（ブラウザカメラ対応）
+
+**バック（Laravel）**
+- Laravel 11（PHP 8.3）、Sanctum（SPA Cookie認証）/ JWT（別ドメイン時）
+- Eloquent ORM、FormRequestバリデーション、Throttle中間層
+- キュー：SQS、メール：SES、ログ：CloudWatch（Monolog）
+- キャッシュ：Redis（ElastiCache）、スケジュール：`schedule:run`
+
+**DB**：Aurora PostgreSQL 16
+
+**ホスティング**
+- Lightsail：Apache + PHP-FPM（Laravel）
+- Nuxt：**静的生成（`nuxi generate`）**してApache配信（ビルドはCI内でNode使用）。SSRが必要なら別途Nodeランタイム/コンテナを用意
+
+**分析**：GA4 or Plausible（遅延ロード）
+
+**環境変数（例）**
+```
+# フロント（Nuxt）
+NUXT_PUBLIC_RELEASE_DATE=2026-07-10T00:00:00+09:00
+NUXT_PUBLIC_API_BASE=/api
+
+# バック（Laravel .env）
+APP_ENV=production
+APP_KEY=base64:...
+APP_URL=https://example.com
+SESSION_DRIVER=cookie
+SESSION_SECURE_COOKIE=true
+SANCTUM_STATEFUL_DOMAINS=example.com
+
+DB_CONNECTION=pgsql
+DB_HOST=<AURORA_ENDPOINT>
+DB_PORT=5432
+DB_DATABASE=<DBNAME>
+DB_USERNAME=<USER>
+DB_PASSWORD=<PASS>
+DB_SSLMODE=require
+
+QUEUE_CONNECTION=sqs
+SQS_PREFIX=https://sqs.ap-northeast-1.amazonaws.com/<acct>
+SQS_QUEUE=default
+
+MAIL_MAILER=ses
+
+SMS_PROVIDER=mock  # twilio|sns|mock
+```
+
+**AWS接続メモ**
+- RDS SG：Lightsail から TCP 5432 許可、`sslmode=require`
+- 同一ドメイン運用推奨（`/api`でLaravel、フロントはルート）→ Sanctum Cookieが簡潔
+
+---
+
+## 2. ルーティング / 情報設計
+**フロント（Nuxt）**
+```
+/pages
+  ├─ index.vue                # TOP
+  ├─ prereg.vue               # 事前登録（直アクセス）
+  ├─ mypage.vue               # マイページ（保護）
+  ├─ qr.vue                   # QR読み取り
+  ├─ admin/
+  │    ├─ index.vue           # ダッシュボード
+  │    ├─ news.vue            # News CRUD
+  │    ├─ users.vue           # ユーザー一覧
+  │    └─ qrcodes.vue         # QRコード発行/一覧
+  └─ legal/
+       ├─ terms.vue           # 利用規約
+       └─ privacy.vue         # プライバシー
+/components
+  Hero.vue / Countdown.vue / Steps.vue / RegisterCount.vue / NewsTicker.vue /
+  PreRegisterDialog.vue / OtpInput.vue / QrScanner.vue / MypageCard.vue
+```
+
+**バック（Laravel API：`routes/api.php`）**
+```
+POST   /api/prereg                # phone,password → OTP発行
+POST   /api/verify-otp            # phone,code → 認証
+POST   /api/auth/login            # phone,password → ログイン（Sanctum Cookie）
+POST   /api/auth/logout           # ログアウト
+GET    /api/auth/me               # セッション確認
+GET    /api/registrations         # {count}
+GET    /api/news/latest           # 最新ニュース
+GET    /api/mypage/points         # {points}
+GET|PATCH /api/mypage/profile     # プロフィール取得/更新
+POST   /api/qr/claim              # {code} → 報酬付与
+
+# 管理系（auth:sanctum + ability:admin）
+GET|POST        /api/admin/news
+GET|PATCH|DELETE/api/admin/news/{id}
+GET|POST        /api/admin/qrcodes
+GET|PATCH|DELETE/api/admin/qrcodes/{id}
+GET             /api/admin/users
+```
+
+---
+
+## 3. データモデル
+**仕様書-データベース構造改.txtを参照
+
+**ビジネスルール**
+- OTP成功→`pre_registrations.status=verified`、`users.points += 100`（初期付与）
+- QR取得→`qr_codes.used_count++`、`claims`作成、`users.points += reward_pts`（上限・期限・アクティブ検査）
+
+---
+
+## 4. バリデーション / セキュリティ
+- 電話番号：E.164へ正規化、`digits_between(8,15)` 等
+- パスワード：`min:8` + 文字種推奨（Laravel Password Rule）
+- レート制限：OTP発行/検証・ログイン・QR取得に `throttle` 適用
+- 認可：Sanctum + Policy（`AdminPolicy`）— `/api/admin/*` を管理者のみに制限
+- CORS：同一ドメイン推奨。別ドメイン時は `config/cors.php` を適切設定
+
+---
+
+## 5. Vibeコーディング用プロンプト（Nuxt + Laravel）
+### 5.1 Layout & Header（Nuxt）
+```
+Vibe: Nuxt 3 + Tailwind で黒基調のサイトShellを作る。
+- Header: 左にロゴ（/）、右にSNSアイコン（LINE/FB/IG/TikTok/X/YouTube）
+- コンテナ: max-w-7xl mx-auto px-6、Footerに規約/プライバシー/著作権
+出力: app.vue, components/AppHeader.vue, components/AppFooter.vue
+```
+
+### 5.2 Hero / Countdown / Steps（Nuxt）
+```
+Vibe: Hero（背景画像 + 暗幕 + CTA）、リリース日カウントダウン、登録手順3カード。
+- releaseDateは useRuntimeConfig().public.RELEASE_DATE から取得
+出力: components/Hero.vue, components/Countdown.vue, components/Steps.vue
+```
+
+### 5.3 RegisterCount / NewsTicker（Nuxt）
+```
+Vibe: axios(ohmyfetch)で /api/registrations と /api/news/latest を取得。
+- RegisterCountは20秒ポーリング、NewsTickerはホバーで一時停止
+出力: components/RegisterCount.vue, components/NewsTicker.vue
+```
+
+### 5.4 PreRegisterDialog + OtpInput（Nuxt）
+```
+Vibe: モーダルで事前登録→OTP 6桁入力。
+- Step1: phone/password → POST /api/prereg
+- Step2: code → POST /api/verify-otp
+- 成功トースト、失敗ハンドリング
+出力: components/PreRegisterDialog.vue, components/OtpInput.vue
+```
+
+### 5.5 MyPage / QR Scanner（Nuxt）
+```
+Vibe: 認証必須。/api/auth/me で判定し、未認証はログインモーダル表示。
+- MyPage: GET /api/mypage/points, /api/mypage/profile
+- QR: @zxing/libraryでコード読取り→ POST /api/qr/claim
+出力: pages/mypage.vue, pages/qr.vue, components/MypageCard.vue, components/QrScanner.vue
+```
+
+### 5.6 Admin Console（Nuxt + Naive UI）
+```
+Vibe: 管理者向け画面。/api/auth/me の role が admin であることを確認。
+- News CRUD、ユーザー一覧、QR発行UI（DataTable）
+出力: pages/admin/index.vue, pages/admin/news.vue, pages/admin/users.vue, pages/admin/qrcodes.vue
+```
+
+### 5.7 Laravel API（ルーティング & コントローラ骨子）
+```
+Vibe: Laravel 11、Sanctum。以下のAPIをroutes/api.phpに定義。
+- PreregController@store, OtpController@verify
+- AuthController@login/logout/me
+- RegistrationController@index
+- NewsController@indexLatest（公開）/ Admin\NewsController（管理）
+- MyPageController@points/profile（GET/PATCH）
+- QrController@claim
+- Admin\QrCodeController, Admin\UserController
+- 各FormRequestでバリデーション、Policiesでadmin制御
+```
+
+### 5.8 Laravel マイグレーション
+```
+Vibe: users, pre_registrations, otp_codes, news_items, qr_codes, claims のmigrationを作成。
+- 主キーはuuid/ulid文字列、適切なindex/unique制約
+- 外部キー：claims.user_id→users.id, claims.qr_code_id→qr_codes.id
+```
+
+---
+
+## 6. デプロイ（Lightsail + RDS）
+1) **RDS/Aurora**（設定済）：エンドポイント/資格情報を控え、SGで5432許可
+2) **Laravel**：Apache + PHP-FPM、`/api`パスで公開。`php artisan migrate --force`、OPcache有効
+3) **Nuxt**：CIで`nuxi generate` → `dist/`をApacheのDocumentRootへ配置（`RewriteRule`でSPAフォールバック）
+4) **SSL**：Lightsailの証明書 or Let’s Encrypt
+5) **ログ/監視**：CloudWatch Logs、RDS Performance Insights、ヘルスチェック
+
+---
+
+## 7. 品質基準 / テスト
+- LCP < 2.5s（PC）/< 3.0s（SP）、Lighthouse 80+
+- E2E：事前登録→OTP→ログイン→QR取得→ポイント反映→マイページ→管理操作
+- アクセス制御：`/admin/*` 直リンク遮断、APIレベルでPolicy検証
+
+---
+
+## 8. リリースチェックリスト
+- [ ] Aurora接続（SSL/SG）確認
+- [ ] Laravel ENV/Sanctum/CORS設定
+- [ ] マイグレーション本番適用
+- [ ] Nuxt ビルド配置 & 404/500
+- [ ] OGP画像・GA設置
+- [ ] 規約/プライバシー確定
+
+---
+
+## 9. 今後の拡張（ロードマップ）
+**アプリ/UX**：ソーシャルログイン（Apple/Google/LINE）、PWA、i18n、アバター/称号、招待・ランキング、A/Bテスト
+
+**コンテンツ/運用**：イベント/クーポン、CMSワークフロー、メンテ告知モード、FAQ/CRM連携、メール配信/WebPush
+
+**経済/ポイント**：ショップ/GIFT交換、取引履歴・取消、不正検知、デイリー/ウィークリー/紹介ボーナス
+
+**QR/不正対策**：署名付きQR、位置/端末フィンガープリント、多重取得検知、監査ログ→Security Hub
+
+**管理/権限**：RBAC細分化、2段階認証（管理者）、CSVインポート/エクスポート、一括ポイント付与
+
+**データ/性能**：Redisキャッシュ、SQSジョブ、S3+CloudFront、OGP自動、Athena/QuickSight/Metabase
+
+**品質/セキュリティ**：2FA、WAF/Shield、RDS PITR/マルチAZ、Secrets Manager/SSM
+
+**コスト/運用**：Aurora Serverless v2検討、CloudWatchダッシュボード/アラート、コスト予実
+
+**本編連携**：SSO、S2S API、Webhook、ティザー→本編移行戦略・ポイント継承

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# SSHデプロイ用設定ファイル
+# 使用方法: cp ssh-config.sh.example ssh-config.sh して値を設定
+
+# SSH接続設定
+SSH_HOST="your-server-ip-or-domain.com"
+SSH_USER="your-username"
+SSH_PORT="22"
+REMOTE_DIR="/var/www/evox"
+
+# アプリケーション設定
+APP_URL="https://your-domain.com"
+
+# データベース設定
+DB_HOST="your-database-host"
+DB_PORT="5432"
+DB_DATABASE="evox_production"
+DB_USERNAME="evox_user"
+DB_PASSWORD="your-secure-password"
+
+# メール設定
+MAIL_HOST="your-smtp-host"
+MAIL_PORT="587"
+MAIL_USERNAME="your-smtp-username"
+MAIL_PASSWORD="your-smtp-password"
+MAIL_FROM_ADDRESS="noreply@your-domain.com"
+
+# Twilio設定
+TWILIO_ACCOUNT_SID="your_twilio_account_sid"
+TWILIO_AUTH_TOKEN="your_twilio_auth_token"
+TWILIO_FROM_NUMBER="+1234567890"

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ペンライトAPIテスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            padding: 20px;
+        }
+        .test-area {
+            background: #333;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .penlight-effect {
+            width: 100%;
+            height: 200px;
+            border: 2px solid #666;
+            border-radius: 10px;
+            margin: 20px 0;
+            transition: all 0.3s;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .status {
+            background: #444;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #dc3545;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .success {
+            background: #28a745;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ペンライトAPIテスト</h1>
+    
+    <div class="test-area">
+        <h2>APIテスト</h2>
+        <button onclick="testAPI()">APIをテスト</button>
+        <button onclick="startPolling()">ポーリング開始</button>
+        <button onclick="stopPolling()">ポーリング停止</button>
+        <div id="api-result" class="status">結果がここに表示されます</div>
+    </div>
+    
+    <div class="test-area">
+        <h2>ペンライトエフェクト</h2>
+        <div id="penlightEffect" class="penlight-effect"></div>
+        <div id="effect-status" class="status">エフェクト状態: 非アクティブ</div>
+    </div>
+    
+    <script>
+        let pollingInterval = null;
+        
+        async function testAPI() {
+            const resultDiv = document.getElementById('api-result');
+            resultDiv.innerHTML = 'APIをテスト中...';
+            
+            try {
+                const response = await fetch('/api/penlight/streaming-status');
+                const result = await response.json();
+                
+                console.log('APIレスポンス:', result);
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>API成功</strong><br>
+                            配信状況: ${result.data.is_streaming ? '配信中' : '停止中'}<br>
+                            プリセット: ${result.data.preset ? result.data.preset.name : 'なし'}<br>
+                            パターン: ${result.data.preset ? result.data.preset.pattern : 'なし'}<br>
+                            BPM: ${result.data.preset ? result.data.preset.bpm : 'なし'}
+                        </div>
+                    `;
+                    
+                    if (result.data.is_streaming && result.data.preset) {
+                        updatePenlightEffect(result.data.preset);
+                    }
+                } else {
+                    resultDiv.innerHTML = `<div class="error">APIエラー: ${result.message}</div>`;
+                }
+            } catch (error) {
+                console.error('APIエラー:', error);
+                resultDiv.innerHTML = `<div class="error">APIエラー: ${error.message}</div>`;
+            }
+        }
+        
+        function updatePenlightEffect(preset) {
+            const effect = document.getElementById('penlightEffect');
+            const status = document.getElementById('effect-status');
+            
+            const pattern = preset.pattern || 'solid';
+            const bpm = preset.bpm || 120;
+            const brightness = preset.brightness || 80;
+            const penlightColor = preset.penlight_color || '#ff0000';
+            const songColor = preset.color || '#ff0000';
+            const audioSync = preset.audio_sync || false;
+            const musicIntensity = preset.music_intensity || 0.8;
+            
+            console.log('🎨 エフェクト更新:', { pattern, bpm, brightness, audioSync, musicIntensity });
+            
+            // グラデーション背景を作成
+            const gradient = `linear-gradient(45deg, ${songColor} 0%, ${penlightColor} 50%, ${songColor} 100%)`;
+            effect.style.background = gradient;
+            effect.style.backgroundSize = '400% 400%';
+            
+            // アニメーションを設定
+            if (pattern && pattern !== 'solid') {
+                const duration = 60 / bpm;
+                
+                if (audioSync) {
+                    // 音声連動モードの場合
+                    effect.style.animation = `${pattern} ${duration}s infinite paused`;
+                    effect.style.opacity = '0.3';
+                    console.log('🎤 音声連動モード: アニメーション一時停止');
+                } else {
+                    // 通常モードの場合
+                    effect.style.animation = `${pattern} ${duration}s infinite`;
+                    effect.style.opacity = (brightness / 100).toString();
+                }
+            } else {
+                effect.style.animation = 'none';
+                effect.style.opacity = (brightness / 100).toString();
+            }
+            
+            // 明度を設定（音声連動モードでない場合のみ）
+            if (!audioSync) {
+                effect.style.filter = `brightness(${brightness / 50})`;
+            }
+            
+            status.innerHTML = `
+                エフェクト状態: アクティブ<br>
+                プリセット: ${preset.name}<br>
+                パターン: ${pattern}<br>
+                BPM: ${bpm}<br>
+                明度: ${brightness}%<br>
+                音声連動: ${audioSync ? 'ON' : 'OFF'}<br>
+                音楽感度: ${musicIntensity}
+            `;
+        }
+        
+        function startPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            
+            pollingInterval = setInterval(() => {
+                testAPI();
+            }, 2000);
+            
+            console.log('ポーリング開始');
+        }
+        
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+            
+            console.log('ポーリング停止');
+        }
+        
+        // ページ読み込み時に初回テスト
+        window.addEventListener('load', () => {
+            console.log('ページ読み込み完了');
+            testAPI();
+        });
+    </script>
+    
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.1); filter: brightness(1.3); }
+        }
+        
+        @keyframes blink {
+            0%, 20% { opacity: 1; transform: scale(1); filter: brightness(1.5); }
+            21%, 40% { opacity: 0.3; transform: scale(0.8); filter: brightness(0.8); }
+            41%, 60% { opacity: 1; transform: scale(1.2); filter: brightness(2); }
+            61%, 80% { opacity: 0.4; transform: scale(0.9); filter: brightness(0.9); }
+            81%, 100% { opacity: 1; transform: scale(1); filter: brightness(1.5); }
+        }
+        
+        @keyframes fade {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        @keyframes wave {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes strobe {
+            0%, 10% { opacity: 1; filter: brightness(2); }
+            11%, 20% { opacity: 0.1; filter: brightness(0.5); }
+            21%, 30% { opacity: 1; filter: brightness(2); }
+            31%, 40% { opacity: 0.1; filter: brightness(0.5); }
+            41%, 50% { opacity: 1; filter: brightness(2); }
+            51%, 60% { opacity: 0.1; filter: brightness(0.5); }
+            61%, 70% { opacity: 1; filter: brightness(2); }
+            71%, 80% { opacity: 0.1; filter: brightness(0.5); }
+            81%, 90% { opacity: 1; filter: brightness(2); }
+            91%, 100% { opacity: 0.1; filter: brightness(0.5); }
+        }
+    </style>
+</body>
+</html>

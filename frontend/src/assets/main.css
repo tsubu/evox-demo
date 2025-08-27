@@ -1,0 +1,190 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* カスタムフォント定義 */
+@font-face {
+  font-family: 'SevenBar';
+  src: url('/font/7barPBd.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 数字用フォントクラス */
+.font-sevenbar {
+  font-family: 'SevenBar', monospace;
+}
+
+/* カスタムカラー */
+:root {
+  --evox-black: #0a0a0a;
+  --evox-gray: #1a1a1a;
+  --evox-blue: #3b82f6;
+  --evox-gold: #fbbf24;
+}
+
+/* 基本スタイル */
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0a0a0a;
+  color: #ffffff;
+}
+
+/* ボタンスタイル */
+.btn-primary {
+  @apply bg-evox-blue text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:bg-evox-blue-dark hover:scale-105 active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-gray-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:bg-gray-700 hover:scale-105 active:scale-95;
+}
+
+/* 入力フィールド */
+.input-field {
+  @apply bg-gray-800 border border-gray-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:border-evox-blue transition-all duration-300;
+}
+
+/* カードスタイル */
+.card {
+  @apply bg-gray-800 border border-gray-700 rounded-lg p-6 shadow-lg;
+}
+
+/* リンクアニメーション */
+.link-hover {
+  @apply transition-all duration-300 hover:scale-105 active:scale-95;
+}
+
+.link-underline {
+  @apply relative overflow-hidden;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00AFB6, #0081C8);
+  transition: width 0.3s ease;
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+.link-pulse {
+  @apply transition-all duration-300 hover:animate-pulse;
+}
+
+.link-glow {
+  @apply transition-all duration-300 hover:shadow-lg hover:shadow-evox-blue/50;
+}
+
+.link-bounce {
+  @apply transition-all duration-300 hover:animate-bounce;
+}
+
+.link-slide {
+  @apply transition-all duration-300 hover:translate-x-1;
+}
+
+/* カスタムアニメーション */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
+}
+
+.animate-pulse-slow {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ローディングスピナー */
+.loading-spinner {
+  @apply inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .btn-primary, .btn-secondary {
+    @apply text-sm py-2 px-3;
+  }
+}

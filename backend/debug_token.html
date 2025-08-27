@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .debug-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h1>トークンデバッグページ</h1>
+    
+    <div class="debug-section info">
+        <h2>現在のトークン状況</h2>
+        <div id="token-status"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>手動トークン設定テスト</h2>
+        <input type="text" id="test-token" placeholder="テスト用トークンを入力" style="width: 300px;">
+        <button onclick="setTestToken()">トークンを設定</button>
+        <button onclick="clearToken()">トークンをクリア</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>ダッシュボードアクセステスト</h2>
+        <button onclick="testDashboardAccess()">ダッシュボードにアクセス</button>
+    </div>
+    
+    <div class="debug-section">
+        <h2>詳細情報</h2>
+        <div id="detailed-info"></div>
+    </div>
+
+    <script>
+        function checkTokens() {
+            const localStorageToken = localStorage.getItem('admin_token');
+            const cookies = document.cookie;
+            const hasAdminTokenCookie = cookies.includes('admin_token=');
+            
+            const statusDiv = document.getElementById('token-status');
+            statusDiv.innerHTML = `
+                <p><strong>localStorage admin_token:</strong> ${localStorageToken ? '✅ Present' : '❌ Missing'}</p>
+                <p><strong>admin_token in cookies:</strong> ${hasAdminTokenCookie ? '✅ Present' : '❌ Missing'}</p>
+                <p><strong>全Cookie:</strong> ${cookies || 'None'}</p>
+                ${localStorageToken ? `<p><strong>トークン値:</strong> ${localStorageToken.substring(0, 20)}...</p>` : ''}
+            `;
+            
+            const detailedDiv = document.getElementById('detailed-info');
+            detailedDiv.innerHTML = `
+                <h3>Cookie詳細:</h3>
+                <pre>${cookies}</pre>
+                <h3>localStorage詳細:</h3>
+                <pre>${JSON.stringify(localStorage, null, 2)}</pre>
+            `;
+        }
+        
+        function setTestToken() {
+            const token = document.getElementById('test-token').value;
+            if (token) {
+                localStorage.setItem('admin_token', token);
+                document.cookie = `admin_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax; Secure=false; HttpOnly=false`;
+                console.log('Test token set:', token);
+                checkTokens();
+            }
+        }
+        
+        function clearToken() {
+            localStorage.removeItem('admin_token');
+            document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            console.log('Token cleared');
+            checkTokens();
+        }
+        
+        function testDashboardAccess() {
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                console.log('Testing dashboard access with token:', token.substring(0, 20) + '...');
+                
+                // Authorizationヘッダー付きでダッシュボードにアクセス
+                fetch('http://localhost:8000/admin/dashboard', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => {
+                    console.log('Dashboard response status:', response.status);
+                    if (response.redirected) {
+                        console.log('Redirected to:', response.url);
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    console.log('Dashboard response data length:', data.length);
+                    if (data.includes('EvoX 管理画面')) {
+                        alert('✅ ダッシュボードアクセス成功！');
+                    } else {
+                        alert('❌ ダッシュボードアクセス失敗');
+                    }
+                })
+                .catch(error => {
+                    console.error('Dashboard access error:', error);
+                    alert('❌ ダッシュボードアクセスエラー: ' + error.message);
+                });
+            } else {
+                alert('❌ トークンが設定されていません');
+            }
+        }
+        
+        // ページ読み込み時にトークン状況を確認
+        window.onload = function() {
+            checkTokens();
+        };
+        
+        // 定期的にトークン状況を更新
+        setInterval(checkTokens, 2000);
+    </script>
+</body>
+</html>

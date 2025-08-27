@@ -1,0 +1,336 @@
+# EvoX データベース構造仕様書 改造版
+# バージョン: 2.1　※出力の際はバージョンを上げる
+
+改造版には、インデックスやリレーションシップの情報は記載していません。
+それらの情報は、基本的には引き継ぎ、もしくは、ケースバイケースでうまく調整します。
+
+
+## 概要
+EvoXアプリケーションのデータベース構造を定義します。PostgreSQL 16.xを使用し、Laravel 12.xのマイグレーションシステムで管理されています。
+
+
+## データベース情報
+- **データベース名**: evox_db
+- **エンジン**: PostgreSQL 16.x
+- **文字エンコーディング**: UTF-8
+- **照合順序**: utf8mb4_general_ci
+
+データベースの文字コードは、utf8_general_ciであれば以下に変更
+utf8mb4_general_ci
+
+
+## テーブル一覧
+
+### users（ユーザーテーブル）
+ユーザーの基本情報とプロフィール情報を管理します。
+※一般ユーザーのみのテーブル
+
+#### カラム定義
+
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ユーザーID |
+| user_ex_id | varchar(13) | UNIQUE, NOT NULL | ユーザー認識用ID（13文字） |
+| user_name | varchar(255) | NULL | ユーザー名 |
+| user_email | varchar(255) | UNIQUE, NOT NULL | メールアドレス |
+| user_phone | varchar(20) | UNIQUE, NOT NULL | 電話番号（国際形式） |
+| user_password | varchar(255) | NOT NULL | ハッシュ化されたパスワード |
+| user_remember_token | varchar(100) | NULL | リメンバートークン |
+| user_created_at | timestamp | NULL | 作成日時 |
+| user_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### users_admin（管理ユーザーテーブル）
+ユーザーの基本情報とプロフィール情報を管理します。
+※管理ユーザーのみのテーブル
+
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ユーザーID |
+| admin_name | varchar(255) | NOT NULL | ユーザー名 |
+| admin_email | varchar(255) | UNIQUE | メールアドレス |
+| admin_phone | varchar(20) | UNIQUE, NOT NULL | 電話番号（国際形式） |
+| admin_password | varchar(255) | NOT NULL | ハッシュ化されたパスワード |
+| admin_dels | boolean | NULL | 削除可能かどうか |
+| admin_remember_token | varchar(100) | NULL | リメンバートークン |
+| admin_is_verified | boolean | DEFAULT false | OTP認証済みフラグ |
+| admin_verified_at | timestamp | NULL | 認証完了日時 |
+| admin_created_at | timestamp | NULL | 作成日時 |
+| admin_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### game_base（ゲーム用基本情報テーブル）
+ユーザーの基本情報とプロフィール情報を管理します。
+※一般ユーザーのみの管理テーブル
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| gamebase_userid | bigint | unique | join用ユーザーID |
+| gamebase_points | integer | DEFAULT 0 | 獲得ポイント数 |
+| gamebase_email_verified_at | timestamp | NULL | メール認証日時 |
+| gamebase_avatar_choice | varchar(255) | NULL | 選択されたキャラクター |
+| gamebase_nickname | varchar(255) | NULL | ニックネーム |
+| gamebase_is_profile_complete | boolean | DEFAULT false | プロフィール完了フラグ |
+| gamebase_created_at | timestamp | NULL | 作成日時 |
+| gamebase_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### pre_registrations（事前登録テーブル）
+ユーザー登録前の一時的な情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | 事前登録ID |
+| prereg_temp_id | varchar(13) | UNIQUE, NOT NULL | 一時ID（13文字） |
+| prereg_phone | varchar(20) | NOT NULL | 電話番号 |
+| prereg_password | varchar(255) | NOT NULL | ハッシュ化されたパスワード |
+| prereg_is_verified | boolean | DEFAULT false | OTP認証済みフラグ |
+| prereg_verified_at | timestamp | NULL | 認証完了日時 |
+| prereg_avatar_choice | varchar(255) | NULL | 選択されたキャラクター |
+| prereg_created_at | timestamp | NULL | 作成日時 |
+| prereg_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+
+
+### otp_codes_user（OTPコードテーブル）
+SMS認証用のワンタイムパスワードを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | OTP ID |
+| useropt_temp_id | varchar(13) | NOT NULL | 一時ID（13文字） |
+| useropt_code | varchar(6) | NOT NULL | 6桁のOTPコード |
+| useropt_expires_at | timestamp | NOT NULL | 有効期限 |
+| useropt_is_used | boolean | DEFAULT false | 使用済みフラグ |
+| useropt_created_at | timestamp | NULL | 作成日時 |
+| useropt_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### otp_codes_admin（OTPコードテーブル管理者用）
+SMS認証用のワンタイムパスワードを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | OTP ID |
+| adminopt_temp_id | varchar(13) | NOT NULL | 一時ID（13文字） |
+| adminopt_code | varchar(6) | NOT NULL | 6桁のOTPコード |
+| adminopt_expires_at | timestamp | NOT NULL | 有効期限 |
+| adminopt_is_used | boolean | DEFAULT false | 使用済みフラグ |
+| adminopt_created_at | timestamp | NULL | 作成日時 |
+| adminopt_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+
+
+### qr_codes（QRコードテーブル）
+QRコードの情報とポイント付与設定を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | QRコードID |
+| qr_code | varchar(255) | UNIQUE, NOT NULL | QRコード識別子 |
+| qr_title | varchar(255) | NOT NULL | QRコードタイトル |
+| qr_description | text | NULL | QRコード説明 |
+| qr_is_liveevent | boolean | DEFAULT true | ライブイベントフラグ |
+| qr_artist_name | bigint | text | アーティスト名 |
+| qr_contents | text | NULL | 付与内容JSON |
+| qr_points | integer | DEFAULT 0 | 付与ポイント数 |
+| qr_is_active | boolean | DEFAULT true | 有効フラグ |
+| qr_is_multiple | boolean | DEFAULT false | 複数利用制限(無制限 true , 制限有 false) |
+| qr_expires_at | timestamp | NULL | 有効期限 |
+| qr_created_at | timestamp | NULL | 作成日時 |
+| qr_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### qr_use_list（QR利用履歴テーブル）
+QRコードのスキャン履歴とポイント獲得記録を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ID |
+| qruse_user_id | bigint | FOREIGN KEY, NOT NULL | ユーザーID |
+| qruse_qr_code_id | bigint | FOREIGN KEY, NOT NULL | QRコードID |
+| qruse_points_earned | integer | NOT NULL | 獲得ポイント数 |
+| qruse_claimed_at | timestamp | NOT NULL | 利用日時 |
+| qruse_created_at | timestamp | NULL | 作成日時 |
+| qruse_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### qr_liveevents（ライブイベント用QR出力用リスト）
+QRコードのスキャン履歴とポイント獲得記録を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ID |
+| qrevent_user_id | bigint | NOT NULL | ユーザーID |
+| qrevent_qr_code_id | bigint | NOT NULL | QRコードID |
+| qrevent_artist_name | text | NOT NULL | アーティスト名 |
+| qrevent_nickname | varchar(255) | NULL | QR読み込み時のゲームニックネーム |
+| qrevent_avatar_choice | varchar(255) | NULL | QR読み込み時の選択されたゲームキャラクター |
+| qrevent_uniquecode | text | unique | ユーザーID+QRコードID |
+| qrevent_created_at | timestamp | NULL | 作成日時 |
+
+
+
+### game_news_items（ニューステーブル）
+アプリケーション内のニュース・お知らせを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ニュースID |
+| gamenews_title | varchar(255) | NOT NULL | ニュースタイトル |
+| gamenews_content | text | NOT NULL | ニュース内容 |
+| gamenews_image_url | varchar(255) | NULL | 画像URL |
+| gamenews_is_published | boolean | DEFAULT false | 公開フラグ |
+| gamenews_published_at | timestamp | NULL | 公開日時 |
+| gamenews_created_at | timestamp | NULL | 作成日時 |
+| gamenews_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### personal_access_tokens（APIトークンテーブル）
+Laravel SanctumによるAPI認証トークンを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | トークンID |
+| api_tokenable_type | varchar(255) | NOT NULL | トークン対象タイプ |
+| api_tokenable_id | bigint | NOT NULL | トークン対象ID |
+| api_name | text | NOT NULL | トークン名 |
+| api_token | varchar(64) | UNIQUE, NOT NULL | トークン文字列 |
+| api_abilities | text | NULL | 権限設定 |
+| api_last_used_at | timestamp | NULL | 最終使用日時 |
+| api_expires_at | timestamp | NULL | 有効期限 |
+| api_created_at | timestamp | NULL | 作成日時 |
+| api_updated_at | timestamp | NULL | 更新日時 |
+
+
+
+### 8. password_reset_tokens（パスワードリセットテーブル）
+パスワードリセット用のトークンを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| pswd_phone | varchar(255) | PRIMARY KEY | 電話番号 |
+| pswd_token | varchar(255) | NOT NULL | リセットトークン |
+| pswd_created_at | timestamp | NULL | 作成日時 |
+
+
+
+
+
+### sessions（セッションテーブル）
+ユーザーセッション情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | varchar(255) | PRIMARY KEY | セッションID |
+| session_user_id | bigint | NULL | ユーザーID |
+| session_ip_address | varchar(45) | NULL | IPアドレス |
+| session_user_agent | text | NULL | ユーザーエージェント |
+| session_payload | longtext | NOT NULL | セッションデータ |
+| session_last_activity | integer | NOT NULL | 最終アクティビティ |
+
+
+
+
+### cache（キャッシュテーブル）
+アプリケーションのキャッシュデータを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| cache_key | varchar(255) | PRIMARY KEY | キャッシュキー |
+| cache_value | mediumtext | NOT NULL | キャッシュ値 |
+| cache_expiration | integer | NOT NULL | 有効期限 |
+
+
+
+
+### cache_locks（キャッシュロックテーブル）
+キャッシュロック機能を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| cachelock_key | varchar(255) | PRIMARY KEY | ロックキー |
+| cachelock_owner | varchar(255) | NOT NULL | ロック所有者 |
+| cachelock_expiration | integer | NOT NULL | 有効期限 |
+
+
+
+
+### jobs（ジョブテーブル）
+非同期処理のジョブを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ジョブID |
+| jobs_queue | varchar(255) | NOT NULL | キュー名 |
+| jobs_payload | longtext | NOT NULL | ジョブデータ |
+| jobs_attempts | tinyint unsigned | NOT NULL | 試行回数 |
+| jobs_reserved_at | integer unsigned | NULL | 予約日時 |
+| jobs_available_at | integer unsigned | NOT NULL | 実行可能日時 |
+| jobs_created_at | integer unsigned | NOT NULL | 作成日時 |
+
+
+
+### job_batches（ジョブバッチテーブル）
+バッチ処理のジョブを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | varchar(255) | PRIMARY KEY | バッチID |
+| jobsbatch_name | varchar(255) | NOT NULL | バッチ名 |
+| jobsbatch_total_jobs | integer | NOT NULL | 総ジョブ数 |
+| jobsbatch_pending_jobs | integer | NOT NULL | 待機中ジョブ数 |
+| jobsbatch_failed_jobs | integer | NOT NULL | 失敗ジョブ数 |
+| jobsbatch_failed_job_ids | longtext | NOT NULL | 失敗ジョブID一覧 |
+| jobsbatch_options | mediumtext | NULL | オプション設定 |
+| jobsbatch_cancelled_at | integer | NULL | キャンセル日時 |
+| jobsbatch_created_at | integer | NOT NULL | 作成日時 |
+| jobsbatch_finished_at | integer | NULL | 完了日時 |
+
+
+
+### failed_jobs（失敗ジョブテーブル）
+失敗したジョブの情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | 失敗ジョブID |
+| failedjob_uuid | varchar(255) | UNIQUE, NOT NULL | ユニークID |
+| failedjob_connection | text | NOT NULL | 接続情報 |
+| failedjob_queue | text | NOT NULL | キュー名 |
+| failedjob_payload | longtext | NOT NULL | ジョブデータ |
+| failedjob_exception | longtext | NOT NULL | 例外情報 |
+| failedjob_failed_at | timestamp | DEFAULT CURRENT_TIMESTAMP | 失敗日時 |
+
+
+
+
+
+

@@ -1,0 +1,486 @@
+# EvoX データベース構造仕様書
+# 最終更新: 2025年1月27日
+# バージョン: 3.0
+
+## 概要
+EvoXアプリケーションのデータベース構造を定義します。PostgreSQL 16.xを使用し、Laravel 12.xのマイグレーションシステムで管理されています。
+
+## データベース情報
+- **データベース名**: evox_db
+- **エンジン**: PostgreSQL 16.x
+- **文字エンコーディング**: UTF-8
+- **照合順序**: utf8mb4_general_ci
+
+## テーブル一覧
+
+### 1. users（ユーザーテーブル）
+一般ユーザーの基本情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ユーザーID |
+| user_ex_id | varchar(13) | UNIQUE, NOT NULL | ユーザー認識用ID（13文字） |
+| user_name | varchar(255) | NULL | ユーザー名 |
+| user_email | varchar(255) | UNIQUE, NOT NULL | メールアドレス |
+| user_phone | varchar(20) | UNIQUE, NOT NULL | 電話番号（国際形式） |
+| user_password | varchar(255) | NOT NULL | ハッシュ化されたパスワード |
+| user_remember_token | varchar(100) | NULL | リメンバートークン |
+| user_created_at | timestamp | NULL | 作成日時 |
+| user_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (user_ex_id)
+- UNIQUE KEY (user_email)
+- UNIQUE KEY (user_phone)
+
+#### リレーションシップ
+- hasOne(GameBase::class, 'gamebase_userid') - ゲーム基本情報
+- hasMany(QrUseList::class, 'qruse_user_id') - QR利用履歴
+
+### 2. users_admin（管理ユーザーテーブル）
+管理者ユーザーの基本情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | 管理者ID |
+| admin_name | varchar(255) | NOT NULL | 管理者名 |
+| admin_email | varchar(255) | UNIQUE, NULL | メールアドレス |
+| admin_phone | varchar(20) | UNIQUE, NOT NULL | 電話番号（国際形式） |
+| admin_password | varchar(255) | NOT NULL | ハッシュ化されたパスワード |
+| admin_dels | boolean | NULL | 削除可能フラグ |
+| admin_remember_token | varchar(100) | NULL | リメンバートークン |
+| admin_is_verified | boolean | DEFAULT false | OTP認証済みフラグ |
+| admin_verified_at | timestamp | NULL | 認証完了日時 |
+| admin_created_at | timestamp | NULL | 作成日時 |
+| admin_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (admin_email)
+- UNIQUE KEY (admin_phone)
+
+### 3. game_base（ゲーム用基本情報テーブル）
+一般ユーザーのゲーム関連情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ID |
+| gamebase_userid | bigint | UNIQUE | ユーザーID（外部キー） |
+| gamebase_points | integer | DEFAULT 0 | 獲得ポイント数 |
+| gamebase_email_verified_at | timestamp | NULL | メール認証日時 |
+| gamebase_avatar_choice | varchar(255) | NULL | 選択されたキャラクター |
+| gamebase_nickname | varchar(255) | NULL | ニックネーム |
+| gamebase_is_profile_complete | boolean | DEFAULT false | プロフィール完了フラグ |
+| gamebase_created_at | timestamp | NULL | 作成日時 |
+| gamebase_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (gamebase_userid)
+
+#### リレーションシップ
+- belongsTo(User::class, 'gamebase_userid') - ユーザー
+
+### 4. pre_registrations（事前登録テーブル）
+ユーザー登録前の一時的な情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | 事前登録ID |
+| prereg_temp_id | varchar(13) | UNIQUE, NOT NULL | 一時ID（13文字） |
+| prereg_phone | varchar(20) | NOT NULL | 電話番号 |
+| prereg_password | varchar(255) | NOT NULL | ハッシュ化されたパスワード |
+| prereg_is_verified | boolean | DEFAULT false | OTP認証済みフラグ |
+| prereg_verified_at | timestamp | NULL | 認証完了日時 |
+| prereg_avatar_choice | varchar(255) | NULL | 選択されたキャラクター |
+| prereg_created_at | timestamp | NULL | 作成日時 |
+| prereg_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (prereg_temp_id)
+
+### 5. otp_codes_user（ユーザー用OTPコードテーブル）
+一般ユーザー用のSMS認証OTPコードを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | OTP ID |
+| useropt_temp_id | varchar(13) | NOT NULL | 一時ID（13文字） |
+| useropt_code | varchar(6) | NOT NULL | 6桁のOTPコード |
+| useropt_expires_at | timestamp | NOT NULL | 有効期限 |
+| useropt_is_used | boolean | DEFAULT false | 使用済みフラグ |
+| useropt_created_at | timestamp | NULL | 作成日時 |
+| useropt_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- INDEX (useropt_temp_id)
+
+### 6. otp_codes_admin（管理者用OTPコードテーブル）
+管理者用のSMS認証OTPコードを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | OTP ID |
+| adminopt_temp_id | varchar(13) | NOT NULL | 一時ID（13文字） |
+| adminopt_code | varchar(6) | NOT NULL | 6桁のOTPコード |
+| adminopt_expires_at | timestamp | NOT NULL | 有効期限 |
+| adminopt_is_used | boolean | DEFAULT false | 使用済みフラグ |
+| adminopt_created_at | timestamp | NULL | 作成日時 |
+| adminopt_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- INDEX (adminopt_temp_id)
+
+### 7. qr_codes（QRコードテーブル）
+QRコードの情報とポイント付与設定を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | QRコードID |
+| qr_code | varchar(255) | UNIQUE, NOT NULL | QRコード識別子 |
+| qr_title | varchar(255) | NOT NULL | QRコードタイトル |
+| qr_description | text | NULL | QRコード説明 |
+| qr_is_liveevent | boolean | DEFAULT true | ライブイベントフラグ |
+| qr_artist_name | text | NULL | アーティスト名 |
+| qr_contents | text | NULL | 付与内容JSON |
+| qr_points | integer | DEFAULT 0 | 付与ポイント数 |
+| qr_is_active | boolean | DEFAULT true | 有効フラグ |
+| qr_is_multiple | boolean | DEFAULT false | 複数利用制限 |
+| qr_expires_at | timestamp | NULL | 有効期限 |
+| qr_created_at | timestamp | NULL | 作成日時 |
+| qr_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (qr_code)
+
+#### リレーションシップ
+- hasMany(QrUseList::class, 'qruse_qr_code_id') - QR利用履歴
+- hasMany(QrLiveEvent::class, 'qrevent_qr_code_id') - ライブイベント履歴
+
+### 8. qr_use_list（QR利用履歴テーブル）
+QRコードのスキャン履歴とポイント獲得記録を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | 利用履歴ID |
+| qruse_user_id | bigint | FOREIGN KEY, NOT NULL | ユーザーID |
+| qruse_qr_code_id | bigint | FOREIGN KEY, NOT NULL | QRコードID |
+| qruse_points_earned | integer | NOT NULL | 獲得ポイント数 |
+| qruse_claimed_at | timestamp | NOT NULL | 利用日時 |
+| qruse_created_at | timestamp | NULL | 作成日時 |
+| qruse_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- FOREIGN KEY (qruse_user_id) REFERENCES users(id) ON DELETE CASCADE
+- FOREIGN KEY (qruse_qr_code_id) REFERENCES qr_codes(id) ON DELETE CASCADE
+
+#### リレーションシップ
+- belongsTo(User::class, 'qruse_user_id') - ユーザー
+- belongsTo(QrCode::class, 'qruse_qr_code_id') - QRコード
+
+### 9. qr_liveevents（ライブイベント用QR出力用リスト）
+ライブイベント用のQRコード利用履歴を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ID |
+| qrevent_user_id | bigint | NOT NULL | ユーザーID |
+| qrevent_qr_code_id | bigint | NOT NULL | QRコードID |
+| qrevent_artist_name | text | NOT NULL | アーティスト名 |
+| qrevent_nickname | varchar(255) | NULL | QR読み込み時のゲームニックネーム |
+| qrevent_avatar_choice | varchar(255) | NULL | QR読み込み時の選択されたゲームキャラクター |
+| qrevent_uniquecode | text | UNIQUE | ユーザーID+QRコードID |
+| qrevent_created_at | timestamp | NULL | 作成日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (qrevent_uniquecode)
+
+#### リレーションシップ
+- belongsTo(User::class, 'qrevent_user_id') - ユーザー
+- belongsTo(QrCode::class, 'qrevent_qr_code_id') - QRコード
+
+### 10. game_news_items（ニューステーブル）
+アプリケーション内のニュース・お知らせを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ニュースID |
+| gamenews_title | varchar(255) | NOT NULL | ニュースタイトル |
+| gamenews_content | text | NOT NULL | ニュース内容 |
+| gamenews_image_url | varchar(255) | NULL | 画像URL |
+| gamenews_is_published | boolean | DEFAULT false | 公開フラグ |
+| gamenews_published_at | timestamp | NULL | 公開日時 |
+| gamenews_created_at | timestamp | NULL | 作成日時 |
+| gamenews_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+
+### 11. personal_access_tokens（APIトークンテーブル）
+Laravel SanctumによるAPI認証トークンを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | トークンID |
+| api_tokenable_type | varchar(255) | NOT NULL | トークン対象タイプ |
+| api_tokenable_id | bigint | NOT NULL | トークン対象ID |
+| api_name | text | NOT NULL | トークン名 |
+| api_token | varchar(64) | UNIQUE, NOT NULL | トークン文字列 |
+| api_abilities | text | NULL | 権限設定 |
+| api_last_used_at | timestamp | NULL | 最終使用日時 |
+| api_expires_at | timestamp | NULL | 有効期限 |
+| api_created_at | timestamp | NULL | 作成日時 |
+| api_updated_at | timestamp | NULL | 更新日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (api_token)
+- INDEX (api_tokenable_type, api_tokenable_id)
+- INDEX (api_expires_at)
+
+### 12. password_reset_tokens（パスワードリセットテーブル）
+パスワードリセット用のトークンを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| pswd_phone | varchar(255) | PRIMARY KEY | 電話番号 |
+| pswd_token | varchar(255) | NOT NULL | リセットトークン |
+| pswd_created_at | timestamp | NULL | 作成日時 |
+
+#### インデックス
+- PRIMARY KEY (pswd_phone)
+
+### 13. sessions（セッションテーブル）
+ユーザーセッション情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | varchar(255) | PRIMARY KEY | セッションID |
+| session_user_id | bigint | NULL | ユーザーID |
+| session_ip_address | varchar(45) | NULL | IPアドレス |
+| session_user_agent | text | NULL | ユーザーエージェント |
+| session_payload | longtext | NOT NULL | セッションデータ |
+| session_last_activity | integer | NOT NULL | 最終アクティビティ |
+
+#### インデックス
+- PRIMARY KEY (id)
+- INDEX (session_user_id)
+- INDEX (session_last_activity)
+
+### 14. cache（キャッシュテーブル）
+アプリケーションのキャッシュデータを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| cache_key | varchar(255) | PRIMARY KEY | キャッシュキー |
+| cache_value | mediumtext | NOT NULL | キャッシュ値 |
+| cache_expiration | integer | NOT NULL | 有効期限 |
+
+#### インデックス
+- PRIMARY KEY (cache_key)
+
+### 15. cache_locks（キャッシュロックテーブル）
+キャッシュロック機能を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| cachelock_key | varchar(255) | PRIMARY KEY | ロックキー |
+| cachelock_owner | varchar(255) | NOT NULL | ロック所有者 |
+| cachelock_expiration | integer | NOT NULL | 有効期限 |
+
+#### インデックス
+- PRIMARY KEY (cachelock_key)
+
+### 16. jobs（ジョブテーブル）
+非同期処理のジョブを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | ジョブID |
+| jobs_queue | varchar(255) | NOT NULL | キュー名 |
+| jobs_payload | longtext | NOT NULL | ジョブデータ |
+| jobs_attempts | tinyint unsigned | NOT NULL | 試行回数 |
+| jobs_reserved_at | integer unsigned | NULL | 予約日時 |
+| jobs_available_at | integer unsigned | NOT NULL | 実行可能日時 |
+| jobs_created_at | integer unsigned | NOT NULL | 作成日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- INDEX (jobs_queue)
+- INDEX (jobs_reserved_at)
+
+### 17. job_batches（ジョブバッチテーブル）
+バッチ処理のジョブを管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | varchar(255) | PRIMARY KEY | バッチID |
+| jobsbatch_name | varchar(255) | NOT NULL | バッチ名 |
+| jobsbatch_total_jobs | integer | NOT NULL | 総ジョブ数 |
+| jobsbatch_pending_jobs | integer | NOT NULL | 待機中ジョブ数 |
+| jobsbatch_failed_jobs | integer | NOT NULL | 失敗ジョブ数 |
+| jobsbatch_failed_job_ids | longtext | NOT NULL | 失敗ジョブID一覧 |
+| jobsbatch_options | mediumtext | NULL | オプション設定 |
+| jobsbatch_cancelled_at | integer | NULL | キャンセル日時 |
+| jobsbatch_created_at | integer | NOT NULL | 作成日時 |
+| jobsbatch_finished_at | integer | NULL | 完了日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+
+### 18. failed_jobs（失敗ジョブテーブル）
+失敗したジョブの情報を管理します。
+
+#### カラム定義
+| カラム名 | データ型 | 制約 | 説明 |
+|---------|---------|------|------|
+| id | bigint | PRIMARY KEY, AUTO_INCREMENT | 失敗ジョブID |
+| failedjob_uuid | varchar(255) | UNIQUE, NOT NULL | ユニークID |
+| failedjob_connection | text | NOT NULL | 接続情報 |
+| failedjob_queue | text | NOT NULL | キュー名 |
+| failedjob_payload | longtext | NOT NULL | ジョブデータ |
+| failedjob_exception | longtext | NOT NULL | 例外情報 |
+| failedjob_failed_at | timestamp | DEFAULT CURRENT_TIMESTAMP | 失敗日時 |
+
+#### インデックス
+- PRIMARY KEY (id)
+- UNIQUE KEY (failedjob_uuid)
+
+## データ型の詳細
+
+### 主要なデータ型
+- **bigint**: 64ビット整数（ID、外部キー用）
+- **varchar(n)**: 可変長文字列（最大n文字）
+- **text**: 長い文字列（最大65,535文字）
+- **longtext**: 非常に長い文字列（最大4GB）
+- **mediumtext**: 中程度の長い文字列（最大16MB）
+- **boolean**: 真偽値（true/false）
+- **timestamp**: 日時情報
+- **integer**: 32ビット整数
+- **tinyint**: 8ビット整数
+
+### 制約の詳細
+- **PRIMARY KEY**: 主キー（一意、NOT NULL）
+- **UNIQUE**: 一意制約
+- **NOT NULL**: NULL値を許可しない
+- **DEFAULT**: デフォルト値
+- **FOREIGN KEY**: 外部キー制約
+- **ON DELETE CASCADE**: 親レコード削除時に子レコードも削除
+
+## セキュリティ考慮事項
+
+### パスワード管理
+- パスワードはbcryptでハッシュ化
+- 平文での保存は禁止
+
+### 個人情報保護
+- 電話番号は国際形式で保存
+- メールアドレスは一意制約
+- 個人情報の暗号化を検討
+
+### アクセス制御
+- 管理者と一般ユーザーの分離
+- APIトークンによる認証
+- セッション管理
+
+## パフォーマンス最適化
+
+### インデックス戦略
+- 主キーには自動的にインデックス
+- 外部キーにはインデックス
+- 検索頻度の高いカラムにインデックス
+- 複合インデックスの検討
+
+### クエリ最適化
+- N+1問題の回避
+- 適切なJOINの使用
+- 不要なカラムの取得回避
+
+## バックアップ戦略
+
+### 定期バックアップ
+- 日次フルバックアップ
+- 時間差分バックアップ
+- トランザクションログのバックアップ
+
+### 復旧手順
+- ポイントインタイム復旧
+- 特定テーブルの復旧
+- データ整合性の確認
+
+## 監視・ログ
+
+### パフォーマンス監視
+- スロークエリの監視
+- インデックス使用率の監視
+- 接続数の監視
+
+### エラー監視
+- データベースエラーのログ
+- デッドロックの監視
+- 容量使用率の監視
+
+## 今後の拡張予定
+
+### 追加予定のテーブル
+- events（イベント管理）
+- gifts（ギフト交換）
+- notifications（通知管理）
+- user_activities（ユーザー活動履歴）
+
+### 機能拡張
+- リアルタイム通知
+- 高度な分析機能
+- マルチテナント対応
+
+## マイグレーション実行順序
+
+1. 0001_01_01_000000_create_users_table.php
+2. 2025_08_19_031242_add_phone_to_users_table.php
+3. 2025_08_20_045901_add_character_and_nickname_to_users_table.php
+4. 2025_08_19_031118_create_pre_registrations_table.php
+5. 2025_08_19_031135_create_otp_codes_table.php
+6. 2025_08_19_031152_create_news_items_table.php
+7. 2025_08_19_031208_create_qr_codes_table.php
+8. 2025_08_19_031224_create_claims_table.php
+9. 2025_08_19_032554_create_personal_access_tokens_table.php
+10. 0001_01_01_000001_create_cache_table.php
+11. 0001_01_01_000002_create_jobs_table.php
+12. 2025_08_20_125833_create_users_admin_table.php
+13. 2025_08_20_125837_create_game_base_table.php
+14. 2025_08_20_125842_create_otp_codes_admin_table.php
+15. 2025_08_20_125849_create_qr_liveevents_table.php
+16. 2025_08_20_125853_rename_columns_in_existing_tables.php
+
+## 注意事項
+
+- 本番環境でのマイグレーション実行前には必ずバックアップを取得
+- データ型の変更時は既存データの整合性を確認
+- 外部キー制約の追加時は既存データの整合性を確認
+- インデックスの追加・削除はパフォーマンスに影響するため慎重に実行
+- 管理者と一般ユーザーの認証システムは完全に分離
+

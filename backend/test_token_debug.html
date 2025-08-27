@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Debug</title>
+</head>
+<body>
+    <h1>Token Debug</h1>
+    <div id="debug-info"></div>
+    
+    <script>
+        function checkTokens() {
+            const localStorageToken = localStorage.getItem('admin_token');
+            const cookies = document.cookie;
+            const hasAdminTokenCookie = cookies.includes('admin_token=');
+            
+            const debugInfo = document.getElementById('debug-info');
+            debugInfo.innerHTML = `
+                <h2>Token Status:</h2>
+                <p><strong>localStorage admin_token:</strong> ${localStorageToken ? 'Present' : 'Missing'}</p>
+                <p><strong>admin_token in cookies:</strong> ${hasAdminTokenCookie ? 'Present' : 'Missing'}</p>
+                <p><strong>All cookies:</strong> ${cookies || 'None'}</p>
+                <p><strong>localStorage token value:</strong> ${localStorageToken ? localStorageToken.substring(0, 20) + '...' : 'N/A'}</p>
+            `;
+            
+            console.log('Token Debug Info:', {
+                localStorageToken: localStorageToken ? 'present' : 'missing',
+                hasAdminTokenCookie: hasAdminTokenCookie,
+                allCookies: cookies
+            });
+        }
+        
+        // ページ読み込み時にチェック
+        window.onload = checkTokens;
+        
+        // 5秒ごとにチェック
+        setInterval(checkTokens, 5000);
+    </script>
+</body>
+</html>
